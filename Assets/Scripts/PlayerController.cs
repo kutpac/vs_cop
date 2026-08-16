@@ -3,6 +3,7 @@ using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.Analytics;
 using UnityEngine.InputSystem;
+using UnityEngine.AI;
 
 public class PlayerController : MonoBehaviour
 {
@@ -14,6 +15,7 @@ public class PlayerController : MonoBehaviour
     private Camera mainCamera;
     private Animator animator;
     private WeaponHolder weaponHolder;
+    private NavMeshAgent agent;
     
     
     private Vector2 moveInput;
@@ -24,21 +26,29 @@ public class PlayerController : MonoBehaviour
         animator = GetComponentInChildren<Animator>();
         mainCamera = Camera.main;
         weaponHolder = GetComponent<WeaponHolder>();
+
+        agent = GetComponent<NavMeshAgent>();
+        agent.updatePosition = false;
+        agent.updateRotation = false;
     }
 
 
     void Update()
     {
-        HandleMovement();
         HandleAiming();
+        HandleMovement();
     }
 
     private void HandleMovement()
     {
         Vector3 move = new Vector3(moveInput.x, 0f, moveInput.y);
         characterController.Move(move * moveSpeed * Time.deltaTime);
-        animator.SetFloat("Speed", new Vector2(moveInput.x, moveInput.y).magnitude);
+
+        Vector3 localMove = transform.InverseTransformDirection(move);
+        animator.SetFloat("MoveX", localMove.x);
+        animator.SetFloat("MoveZ",localMove.z);
     }
+
 
     private void HandleAiming()
     {

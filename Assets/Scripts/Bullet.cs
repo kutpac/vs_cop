@@ -20,6 +20,10 @@ public class Bullet : MonoBehaviour
     void OnCollisionEnter(Collision collider)
     {
         health = collider.gameObject.GetComponent<Health>();
+        if (health != null)
+        {
         health.TakeDamage(25);
+        }
+        Destroy(gameObject);
     }
 }

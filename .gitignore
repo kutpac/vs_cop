@@ -16,6 +16,14 @@
 # Recordings can get excessive in size
 /[Rr]ecordings/
 
+# Unity scene auto-recovery snapshots after a crash/unclean shutdown
+/[Aa]ssets/_Recovery/
+
+# Mixamo character/animation source files are too large for git (several 50-135MB FBX
+# files, ~800MB total) and exceed GitHub's free LFS quota. Re-download from mixamo.com
+# instead of restoring from history. See README for the specific files/packs used.
+/[Aa]ssets/3rd Party Assets/mixamo/
+
 # Uncomment this line if you wish to ignore the asset store tools plugin
 # /[Aa]ssets/AssetStoreTools*
 
