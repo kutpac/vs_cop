@@ -3,9 +3,12 @@ using UnityEngine.AI;
 
 public class ZombieSpawner : MonoBehaviour
 {
-    [SerializeField] GameObject zombiePrefab;
+    [SerializeField] GameObject walkerPrefab;
+    [SerializeField] GameObject runnerPrefab;
     [SerializeField] Transform player;
     [SerializeField] Transform enemiesParent;
+
+    [SerializeField] float runnerChance = 0.1f;
     [SerializeField] float minSpawnRadius = 15f;
     [SerializeField] float maxSpawnRadius = 25f;
     [SerializeField] float spawnInterval = 3f;
@@ -33,7 +36,6 @@ public class ZombieSpawner : MonoBehaviour
             timer = spawnInterval;
             TrySpawnZombie();
         }
-        
     }
 
     void TrySpawnZombie()
@@ -50,7 +52,8 @@ public class ZombieSpawner : MonoBehaviour
             if (!NavMesh.SamplePosition(candidate, out NavMeshHit hit, 2f, NavMesh.AllAreas)) continue;
             if (IsVisibleFromCamera(hit.position)) continue;
 
-            Instantiate(zombiePrefab, hit.position, Quaternion.identity, enemiesParent);
+            GameObject prefabToSpawn = Random.value < runnerChance ? runnerPrefab : walkerPrefab;
+            Instantiate(prefabToSpawn, hit.position, Quaternion.identity, enemiesParent);
             return;
         }
     }

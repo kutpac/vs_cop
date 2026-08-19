@@ -15,6 +15,8 @@ public class WeaponHolder : MonoBehaviour
     private Transform bulletSpawnPoint;
     private GameObject currentWeapon;
 
+    public static event System.Action<Vector3> OnWeaponFired;
+
     private Vector3 pistolPosition = new Vector3(-0.05077881f, 0.1154558f, 0.02363466f);
     private Vector3 pistolRotation = new Vector3(264.41f,25.867f,77.643f);
     
@@ -67,6 +69,7 @@ public class WeaponHolder : MonoBehaviour
         
         if (fireCooldownTimer > 0f) return;
         Instantiate(bulletPrefab,bulletSpawnPoint.position, bulletSpawnPoint.rotation);
+        OnWeaponFired?.Invoke(transform.position);
         fireCooldownTimer = fireRate;
     }
 }
