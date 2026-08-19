@@ -1877,6 +1877,9 @@ MonoBehaviour:
   attackDamage: 10
   hitStaggerDuration: 0.8
   hitSlowMultiplier: 0.3
+  crawlChance: 0.3
+  crawlHealth: 30
+  crawlSpeedMultiplier: 0.3
 --- !u!114 &-8796454902213048332
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1893,10 +1896,10 @@ MonoBehaviour:
   onDeath:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 5294650820338410251}
-        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-        m_MethodName: SetActive
-        m_Mode: 6
+      - m_Target: {fileID: 4542842302522740688}
+        m_TargetAssemblyTypeName: ZombieController, Assembly-CSharp
+        m_MethodName: HandleDeath
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine

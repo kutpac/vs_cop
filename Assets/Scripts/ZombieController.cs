@@ -20,6 +20,7 @@ public class ZombieController : MonoBehaviour
     [SerializeField] float crawlChance = 0.3f;
     [SerializeField] float crawlHealth = 30f;
     [SerializeField] float crawlSpeedMultiplier = 0.3f; 
+    [SerializeField] float crawlerDeathFreezeDelay = 1f;
     
     private Animator animator;
     private NavMeshAgent agent;
@@ -29,6 +30,7 @@ public class ZombieController : MonoBehaviour
 
     private bool hasNoticedPlayer;
     private bool canMove;
+    private float currentBaseSpeed;
     private float attackCooldownTimer;
     private bool hasStandupSpeedParam;
     private bool hasWillCrawlParam;
@@ -36,6 +38,9 @@ public class ZombieController : MonoBehaviour
     private bool diedFinal;
     private float baseAgentSpeed;
     private float hitStaggerTimer;
+    private bool isCrawler;
+    private bool frozenDeath;
+    private float deathFreezeTimer;
 
     float retargetInterval = 0.25f;
     float retargetTimer;
@@ -59,6 +64,7 @@ public class ZombieController : MonoBehaviour
         hasWillCrawlParam = System.Array.Exists(animator.parameters, p => p.name == "WillCrawl");
         health = GetComponent<Health>();
         baseAgentSpeed = agent.speed;
+        currentBaseSpeed = baseAgentSpeed;
     }
 
     void Start()
@@ -94,7 +100,7 @@ public class ZombieController : MonoBehaviour
             hitStaggerTimer -= Time.deltaTime;
             if (hitStaggerTimer <= 0f)
             {
-                agent.speed = baseAgentSpeed;
+                agent.speed = currentBaseSpeed;
             }
         }
     }
@@ -144,7 +150,7 @@ public class ZombieController : MonoBehaviour
         animator.SetLayerWeight(attackLayerIndex,1f);
         animator.SetTrigger(Random.value < 0.5f ? "Hit1" : "Hit2");
         hitStaggerTimer = hitStaggerDuration;
-        agent.speed = baseAgentSpeed * hitSlowMultiplier;
+        agent.speed = currentBaseSpeed * hitSlowMultiplier;
         agent.velocity *= hitSlowMultiplier;
     }
 
@@ -207,6 +213,20 @@ public class ZombieController : MonoBehaviour
     public void HandleDeath()
     {
         isDying = true;
+        agent.isStopped = true;
+        agent.velocity = Vector3.zero;
+
+        if (isCrawler)
+        {
+            diedFinal = true;
+            frozenDeath = true;
+            animator.speed = 0f;
+            agent.velocity = Vector3.zero;
+            deathFreezeTimer = crawlerDeathFreezeDelay;
+            return;
+        }
+
+        frozenDeath =false;
         bool willCrawl = hasWillCrawlParam && Random.value < crawlChance;
         diedFinal = !willCrawl;
         
@@ -218,17 +238,30 @@ public class ZombieController : MonoBehaviour
 
         if (willCrawl)
         {
+            isCrawler = true;
             agent.speed = baseAgentSpeed * crawlSpeedMultiplier;
+            currentBaseSpeed = agent.speed;
             health.Revive(crawlHealth);
         }
     }
     private void HandlePostDeathTransition()
     {
+        if (frozenDeath)
+        {
+            deathFreezeTimer -= Time.deltaTime;
+            if (deathFreezeTimer <= 0f)
+            {
+                gameObject.SetActive(false);
+            }
+            return;
+        }
+
         AnimatorStateInfo state = animator.GetCurrentAnimatorStateInfo(0);
 
         if (!diedFinal && state.IsName("Zombie Crawl"))
         {
             isDying = false;
+            agent.isStopped=false;
             return;
         }
         if (diedFinal && state.IsName("Zombie Death") && state.normalizedTime >= 1f)
