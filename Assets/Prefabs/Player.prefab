@@ -124,10 +124,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: faaad2a93d38d7347a7b067ee58d3679, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WeaponHolder
-  weaponPrefab: {fileID: 4164444206253650672, guid: a89310a6f6fc2964db9bc60b381dcfa8, type: 3}
-  bulletPrefab: {fileID: 6422201002112565364, guid: fbf1d2aa003ed5f43be697be06a6069c, type: 3}
-  weaponScale: 0.68
-  fireRate: 0.4
+  currentWeapon: {fileID: 11400000, guid: dcff06153c94f1f4ca9a2385a99baa3e, type: 2}
 --- !u!114 &4771290430940817032
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -142,6 +139,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Health
   maxHealth: 100
   onDeath:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 0}
+        m_TargetAssemblyTypeName: 
+        m_MethodName: 
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  onZombieDamaged:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 0}
@@ -277,9 +289,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 32d2d778dfc108d46b70b07df077f335, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ZombieSpawner
-  zombiePrefab: {fileID: 5294650820338410251, guid: a9c22ff124be7cb43b8a115348087033, type: 3}
+  walkerPrefab: {fileID: 5294650820338410251, guid: a9c22ff124be7cb43b8a115348087033, type: 3}
+  runnerPrefab: {fileID: 5294650820338410251, guid: 4505b115a2996ed4fb6f9efb0c955785, type: 3}
   player: {fileID: 2680255464775550279}
   enemiesParent: {fileID: 0}
+  runnerChance: 0.1
   minSpawnRadius: 15
   maxSpawnRadius: 25
   spawnInterval: 3

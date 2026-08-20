@@ -4,32 +4,27 @@ using UnityEngine;
 
 public class WeaponHolder : MonoBehaviour
 {
-    [SerializeField] GameObject weaponPrefab;
-    [SerializeField] GameObject bulletPrefab;
-    [SerializeField] float weaponScale = 0.68f;
-    [SerializeField] float fireRate = 0.4f;
-    
-    private float fireCooldownTimer;
-    private Animator animator;
-    private Transform handBone;
-    private Transform bulletSpawnPoint;
-    private GameObject currentWeapon;
-
     public static event System.Action<Vector3> OnWeaponFired;
 
-    private Vector3 pistolPosition = new Vector3(-0.05077881f, 0.1154558f, 0.02363466f);
-    private Vector3 pistolRotation = new Vector3(264.41f,25.867f,77.643f);
-    
+    [SerializeField] WeaponSO currentWeapon;
+
+    private GameObject currentWeaponInstance;
+    private Transform bulletSpawnPoint;
+    private float fireCooldownTimer;
+
+    private Animator animator;
+    private Transform handBone;
+
 
     void Awake()
     {
         animator = GetComponentInChildren<Animator>();
     }
-    
+
     void Start()
     {
         handBone = animator.GetBoneTransform(HumanBodyBones.RightHand);
-        EquipWeapon(weaponPrefab);
+        EquipWeapon(currentWeapon);
     }
 
     void Update()
@@ -45,31 +40,32 @@ public class WeaponHolder : MonoBehaviour
         }
     }
 
-    void EquipWeapon(GameObject prefab)
+    void EquipWeapon(WeaponSO weapon)
     {
-        if (currentWeapon != null)
+        if (currentWeaponInstance != null)
         {
-            Destroy(currentWeapon);
+            Destroy(currentWeaponInstance);
         }
-        currentWeapon = Instantiate(weaponPrefab, handBone);
-        currentWeapon.transform.localPosition = pistolPosition;
-        currentWeapon.transform.localRotation = Quaternion.Euler(pistolRotation);
+        currentWeaponInstance = Instantiate(weapon.weaponPrefab, handBone);
+        currentWeaponInstance.transform.localPosition = weapon.gripPosition;
+        currentWeaponInstance.transform.localRotation = Quaternion.Euler(weapon.gripRotation);
 
         Vector3 parentScale = handBone.lossyScale;
-        currentWeapon.transform.localScale = new Vector3 (
+        currentWeaponInstance.transform.localScale = new Vector3 (
             1f / parentScale.x,
             1f / parentScale.y , 
-            1f / parentScale.z) * 2f * weaponScale;
+            1f / parentScale.z) * 2f * weapon.weaponScale;
 
-        bulletSpawnPoint = currentWeapon.transform.Find("Muzzle");
+        bulletSpawnPoint = currentWeaponInstance.transform.Find("Muzzle");
+        animator.SetInteger("WeaponType",(int)weapon.weaponType);
     }
-    
+
     public void FireWeapon()
     {
-        
         if (fireCooldownTimer > 0f) return;
-        Instantiate(bulletPrefab,bulletSpawnPoint.position, bulletSpawnPoint.rotation);
+        Instantiate(currentWeapon.bulletPrefab,bulletSpawnPoint.position, bulletSpawnPoint.rotation);
+        animator.SetTrigger("Fire");
         OnWeaponFired?.Invoke(transform.position);
-        fireCooldownTimer = fireRate;
+        fireCooldownTimer = currentWeapon.fireRate;
     }
 }
