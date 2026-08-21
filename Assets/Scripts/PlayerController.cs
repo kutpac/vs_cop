@@ -87,5 +87,13 @@ public class PlayerController : MonoBehaviour
             weaponHolder.FireWeapon();
         }
     }
+
+    public void OnReload(InputValue value)
+    {
+        if (value.isPressed)
+        {
+            weaponHolder.ReloadWeapon();
+        }
+    }
     
 }

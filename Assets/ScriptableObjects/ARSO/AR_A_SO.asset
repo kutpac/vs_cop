@@ -15,8 +15,9 @@ MonoBehaviour:
   weaponType: 1
   weaponPrefab: {fileID: 4185518912306324553, guid: e607a45d4c2b3cc4eb2030c0f17b1a40, type: 3}
   bulletPrefab: {fileID: 6422201002112565364, guid: fbf1d2aa003ed5f43be697be06a6069c, type: 3}
-  fireRate: 0
+  fireRate: 0.1
   damage: 0
+  clipSize: 30
   weaponScale: 0.6
   gripPosition: {x: -0.0544, y: 0.1083, z: 0.0185}
   gripRotation: {x: 281.21722, y: 25.050676, z: 64.5228}

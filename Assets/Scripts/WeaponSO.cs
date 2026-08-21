@@ -13,6 +13,7 @@ public class WeaponSO : ScriptableObject
     
     public float fireRate;
     public float damage;
+    public int clipSize;
 
     public float weaponScale;
     public Vector3 gripPosition;
