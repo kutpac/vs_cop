@@ -15,9 +15,11 @@ MonoBehaviour:
   weaponType: 0
   weaponPrefab: {fileID: 2804036681021304787, guid: a679459ff8092ab42a138cbd56233755, type: 3}
   bulletPrefab: {fileID: 6422201002112565364, guid: fbf1d2aa003ed5f43be697be06a6069c, type: 3}
+  muzzleFlashPrefab: {fileID: 100006, guid: 2e2d4ec8f3b038943b14ff2075329914, type: 3}
   fireRate: 0.4
   damage: 25
   clipSize: 12
   weaponScale: 0.68
   gripPosition: {x: -0.05077881, y: 0.1154558, z: 0.02363466}
   gripRotation: {x: 264.41, y: 25.867, z: 77.643}
+  fireSound: {fileID: 8300000, guid: bb52d25379dabd24ab27d4ecff7a58ac, type: 3}

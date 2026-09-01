@@ -14,19 +14,25 @@ public class ZombieController : MonoBehaviour
     [SerializeField] float screamChance = 0.3f;
     [SerializeField] float attackRange = 1.5f;
     [SerializeField] float attackCooldown = 1.5f;
-    [SerializeField] int attackDamage = 10;
+    [SerializeField] int attackDamage = 6;
     [SerializeField] float hitStaggerDuration = 0.3f;
     [SerializeField] float hitSlowMultiplier = 0.2f;
     [SerializeField] float crawlChance = 0.3f;
     [SerializeField] float crawlHealth = 30f;
     [SerializeField] float crawlSpeedMultiplier = 0.3f; 
     [SerializeField] float crawlerDeathFreezeDelay = 1f;
+    [SerializeField] float corpseLingerTime = 45f;
     
     private Animator animator;
     private NavMeshAgent agent;
 
     private Health playerHealth;
     private Health health;
+
+    private Transform headBone;
+    private Transform bodyBone;
+
+    private CapsuleCollider capsuleCollider;
 
     private bool hasNoticedPlayer;
     private bool canMove;
@@ -41,9 +47,29 @@ public class ZombieController : MonoBehaviour
     private bool isCrawler;
     private bool frozenDeath;
     private float deathFreezeTimer;
+    private bool awaitingRemoval;
+    private float corpseLingerTimer;
+
+    [SerializeField] AudioSource audioSource;
+    [SerializeField] AudioClip[] idleSounds;
+    [SerializeField] float minIdleInterval = 4f;
+    [SerializeField] float maxIdleInterval = 10f;
+    [SerializeField] AudioClip screamSound;
+    [SerializeField] AudioClip[] hurtSounds;
+    [SerializeField] AudioClip[] impactSounds;
+    [SerializeField] AudioClip[] attackSounds;
+    [SerializeField] AudioClip[] footstepSounds;
+    [SerializeField] float voiceVolume = 0.3f;
+
+    [SerializeField] GameObject healingPillPrefab;
+    [SerializeField] float healingPillDropChance = 0.05f;
+
+    private float idleSoundTimer;
 
     float retargetInterval = 0.25f;
     float retargetTimer;
+
+    public bool IsDead => isDying;
 
     void OnEnable()
     {
@@ -59,6 +85,9 @@ public class ZombieController : MonoBehaviour
     {
         agent = GetComponent<NavMeshAgent>();
         animator = GetComponentInChildren<Animator>();
+        capsuleCollider = GetComponent<CapsuleCollider>();
+        headBone = animator.GetBoneTransform(HumanBodyBones.Head);
+        bodyBone = animator.GetBoneTransform(HumanBodyBones.Spine);
         attackLayerIndex = animator.GetLayerIndex("Attack");
         hasStandupSpeedParam = System.Array.Exists(animator.parameters, p => p.name == "StandupSpeed");
         hasWillCrawlParam = System.Array.Exists(animator.parameters, p => p.name == "WillCrawl");
@@ -91,6 +120,26 @@ public class ZombieController : MonoBehaviour
         HandleStaggerTimer();
         HandleAttacking();
         HandleZombieMovement();
+        HandleIdleSounds();
+    }
+
+    private void HandleIdleSounds()
+    {
+        if (hasNoticedPlayer) return;
+
+        idleSoundTimer -= Time.deltaTime;
+        if (idleSoundTimer <= 0f)
+        {
+            PlayRandomClip(idleSounds, voiceVolume);
+            idleSoundTimer = Random.Range(minIdleInterval, maxIdleInterval);
+        }
+    }
+
+    private void PlayRandomClip(AudioClip[] clips, float volume = 1f)
+    {
+        if (clips.Length == 0) return;
+        AudioClip clip = clips[Random.Range(0, clips.Length)];
+        audioSource.PlayOneShot(clip, volume);
     }
 
     private void HandleStaggerTimer()
@@ -143,6 +192,11 @@ public class ZombieController : MonoBehaviour
         {
         animator.SetFloat("StandupSpeed", 1f);
         }
+
+        if (willScream)
+        {
+            audioSource.PlayOneShot(screamSound, voiceVolume);
+        }
     }
 
     public void PlayHitReaction()
@@ -152,6 +206,9 @@ public class ZombieController : MonoBehaviour
         hitStaggerTimer = hitStaggerDuration;
         agent.speed = currentBaseSpeed * hitSlowMultiplier;
         agent.velocity *= hitSlowMultiplier;
+
+        PlayRandomClip(hurtSounds, voiceVolume);
+        PlayRandomClip(impactSounds);
     }
 
     private void HandleWeaponFired(Vector3 firePosition)
@@ -183,6 +240,7 @@ public class ZombieController : MonoBehaviour
                 animator.SetLayerWeight(attackLayerIndex,1f);
                 playerHealth.TakeDamage(attackDamage);
                 attackCooldownTimer = attackCooldown;
+                PlayRandomClip(attackSounds);
             }
         } 
     }
@@ -223,6 +281,8 @@ public class ZombieController : MonoBehaviour
             animator.speed = 0f;
             agent.velocity = Vector3.zero;
             deathFreezeTimer = crawlerDeathFreezeDelay;
+            capsuleCollider.enabled = false;
+            TryDropHealingPill();
             return;
         }
 
@@ -243,15 +303,39 @@ public class ZombieController : MonoBehaviour
             currentBaseSpeed = agent.speed;
             health.Revive(crawlHealth);
         }
+        else
+        {
+            capsuleCollider.enabled=false;
+            TryDropHealingPill();
+        }
+    }
+
+    private void TryDropHealingPill()
+    {
+        if (healingPillPrefab == null) return;
+        if (Random.value > healingPillDropChance) return;
+
+        Instantiate(healingPillPrefab, transform.position, Quaternion.identity);
     }
     private void HandlePostDeathTransition()
     {
+        if (awaitingRemoval)
+        {
+            corpseLingerTimer -= Time.deltaTime;
+            if (corpseLingerTimer <= 0f)
+            {
+                gameObject.SetActive(false);
+            }
+            return;
+        }
+        
         if (frozenDeath)
         {
             deathFreezeTimer -= Time.deltaTime;
             if (deathFreezeTimer <= 0f)
             {
-                gameObject.SetActive(false);
+                awaitingRemoval = true;
+                corpseLingerTimer = corpseLingerTime;
             }
             return;
         }
@@ -266,7 +350,18 @@ public class ZombieController : MonoBehaviour
         }
         if (diedFinal && state.IsName("Zombie Death") && state.normalizedTime >= 1f)
         {
-            gameObject.SetActive(false);
+            awaitingRemoval = true;
+            corpseLingerTimer = corpseLingerTime;
         }
+    }
+    public void PlayFootstep()
+    {
+        PlayRandomClip(footstepSounds);
+    }
+
+    public Transform GetBloodSprayPoint(Vector3 hitPoint)
+    {
+        float threshold = (headBone.position.y + bodyBone.position.y)/2f;
+        return hitPoint.y > threshold ? headBone : bodyBone;
     }
 }

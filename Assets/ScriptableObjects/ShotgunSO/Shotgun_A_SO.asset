@@ -17,6 +17,7 @@ MonoBehaviour:
   bulletPrefab: {fileID: 0}
   fireRate: 0
   damage: 0
-  weaponScale: 0
-  gripPosition: {x: 0, y: 0, z: 0}
-  gripRotation: {x: 0, y: 0, z: 0}
+  clipSize: 0
+  weaponScale: 0.65
+  gripPosition: {x: -0.059, y: 0.1289, z: 0.0391}
+  gripRotation: {x: 283.143, y: 39.327114, z: 50.56259}

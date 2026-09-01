@@ -3,11 +3,11 @@ using UnityEngine.Events;
 
 public class Health : MonoBehaviour
 {
-    [SerializeField] float maxHealth = 100f;
+    [SerializeField] protected float maxHealth = 100f;
     [SerializeField] UnityEvent onDeath;
     [SerializeField] UnityEvent onZombieDamaged;
 
-    private float currentHealth;
+    protected float currentHealth;
     private bool isDead;
 
     void Awake()
@@ -21,12 +21,21 @@ public class Health : MonoBehaviour
 
         currentHealth = Mathf.Max(currentHealth - amount,0);
         onZombieDamaged.Invoke();
+        OnHealthChanged();
 
         if (currentHealth <= 0f)
         {
             isDead = true;
             onDeath.Invoke();
         }
+    }
+    protected virtual void OnHealthChanged() { }
+
+    public void Heal(float amount)
+    {
+        if (isDead) return;
+        currentHealth = Mathf.Min(currentHealth + amount, maxHealth);
+        OnHealthChanged();
     }
 
     public void Revive(float newMaxHealth)

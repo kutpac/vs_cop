@@ -10,6 +10,7 @@ public class WeaponSO : ScriptableObject
     
     public GameObject weaponPrefab;
     public GameObject bulletPrefab;
+    public GameObject muzzleFlashPrefab;
     
     public float fireRate;
     public float damage;
@@ -18,4 +19,6 @@ public class WeaponSO : ScriptableObject
     public float weaponScale;
     public Vector3 gripPosition;
     public Vector3 gripRotation;
+
+    public AudioClip fireSound;
 }
