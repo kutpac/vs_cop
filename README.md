@@ -33,7 +33,7 @@ An isometric survivor-vs-zombies shooter built in Unity, with a PSX (PS1)-inspir
 
 ## Credits
 
-Built using a mix of original code/design and third-party art, audio, and model assets (see `Assets/3rd Party Assets/` for individual pack attributions). Game logic and scripting were developed with AI assistance (Claude).
+Built using a mix of original code/design and third-party art, audio, and model assets (see `Assets/3rd Party Assets/` for individual pack attributions).
 
 ## License
 
