@@ -2,7 +2,7 @@
 
 An isometric survivor-vs-zombies shooter built in Unity, with a PSX (PS1)-inspired retro visual style.
 
-🎮 **Play it on itch.io:** [ADD_YOUR_ITCH_IO_LINK_HERE]
+🎮 **Play it on itch.io:** https://kutpac.itch.io/isometric-zombie-shooter-demo
 
 ## Features
 
