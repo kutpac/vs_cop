@@ -1886,12 +1886,12 @@ MonoBehaviour:
   - 0.5
   - 0.1
   - 0.4
-  fireSoundNoticeRadius: 25
+  fireSoundNoticeRadius: 40
   noticeRadius: 8
   screamChance: 0.3
   attackRange: 2.5
   attackCooldown: 1.5
-  attackDamage: 10
+  attackDamage: 6
   hitStaggerDuration: 0.3
   hitSlowMultiplier: 0.2
   crawlChance: 1

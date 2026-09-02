@@ -470,9 +470,15 @@ MonoBehaviour:
   runnerChance: 0.1
   minSpawnRadius: 15
   maxSpawnRadius: 25
-  spawnInterval: 3
-  maxAliveZombies: 30
   maxAttemptsPerSpawn: 5
+  noSpawnLayer:
+    serializedVersion: 2
+    m_Bits: 1024
+  initialSpawnInterval: 3
+  minSpawnInterval: 0.75
+  initialMaxAliveZombies: 30
+  maxAliveZombiesCap: 100
+  difficultyRampDuration: 300
 --- !u!1 &4479552564824562164
 GameObject:
   m_ObjectHideFlags: 0
@@ -5738,6 +5744,18 @@ PrefabInstance:
       propertyPath: m_ConstrainProportionsScale
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: -5109604030079018270, guid: 8a6614e4242e85d4d8927eacea9608c8, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 7dfd261a58d74a849b92274dbd96c05a, type: 2}
+    - target: {fileID: -5109604030079018270, guid: 8a6614e4242e85d4d8927eacea9608c8, type: 3}
+      propertyPath: 'm_Materials.Array.data[1]'
+      value: 
+      objectReference: {fileID: 2100000, guid: bdd6ce06601b60a47ba2c63c061c8b15, type: 2}
+    - target: {fileID: -5109604030079018270, guid: 8a6614e4242e85d4d8927eacea9608c8, type: 3}
+      propertyPath: 'm_Materials.Array.data[2]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 310946f8f1ec7da4599bbbcebc4d1249, type: 2}
     - target: {fileID: 919132149155446097, guid: 8a6614e4242e85d4d8927eacea9608c8, type: 3}
       propertyPath: m_Name
       value: Pistol Idle
